@@ -7,6 +7,8 @@ exports.AppDataSource = void 0;
 require("reflect-metadata");
 const typeorm_1 = require("typeorm");
 const path_1 = __importDefault(require("path"));
+const Situations_1 = require("./entity/Situations");
+const Users_1 = require("./entity/Users");
 // Importar variáveis de ambiente
 const dotenv_1 = __importDefault(require("dotenv"));
 // Carregando as variaveis do .env
@@ -21,10 +23,16 @@ exports.AppDataSource = new typeorm_1.DataSource({
     database: process.env.DB_DATABASE,
     synchronize: false,
     logging: true,
-    entities: [],
+    entities: [Situations_1.Situation, Users_1.User],
     subscribers: [],
     migrations: [
         // aceita rodar tanto em src (.ts) quanto em dist (.js)
         path_1.default.join(__dirname, "migration", "*.{js,ts}").replace(/\\/g, "/"),
     ],
+});
+//Inicializar a conexão com BD
+exports.AppDataSource.initialize().then(() => {
+    console.log("Conexão do banco de dados realizado com sucesso!");
+}).catch((error) => {
+    console.log("Erro na conexão com o banco de dados!", error);
 });
