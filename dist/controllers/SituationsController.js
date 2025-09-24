@@ -7,14 +7,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const data_source_1 = require("../data-source");
 const Situations_1 = require("../entity/Situations");
+const PaginationService_1 = require("../services/PaginationService");
 // Criar a Aplicação Express
 const router = express_1.default.Router();
 //Criar a LISTA
 router.get("/situations", async (req, res) => {
     try {
         const situationRepository = data_source_1.AppDataSource.getRepository(Situations_1.Situation);
-        const situations = await situationRepository.find();
-        res.status(200).json(situations);
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const result = await PaginationService_1.PaginationService.paginate(situationRepository, page, limit, { id: "DESC" });
+        res.status(200).json(result);
         return;
     }
     catch (error) {

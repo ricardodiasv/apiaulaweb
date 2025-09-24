@@ -2,6 +2,7 @@
 import express, {Request, Response} from "express";
 import { AppDataSource } from "../data-source";
 import { Situation } from "../entity/Situations";
+import { PaginationService } from "../services/PaginationService";
 
 
 
@@ -15,11 +16,15 @@ router.get("/situations", async(req:Request, res:Response)=>{
   try{
     const situationRepository = AppDataSource.getRepository(Situation);
 
-    const situations = await situationRepository.find();
+    const page = Number(req.query.page) || 1;
+  
+    const limit = Number(req.query.limit) || 10;
 
-    res.status(200).json(situations);
+    const result = await PaginationService.paginate(situationRepository, page, limit, {id: "DESC"});
+    
+    res.status(200).json(result);
 
-    return
+    return;
 
   }catch(error){
     res.status(500).json({
