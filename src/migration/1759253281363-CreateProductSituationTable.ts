@@ -1,11 +1,11 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateSituationTable1757955531328 = void 0;
-const typeorm_1 = require("typeorm");
-class CreateSituationTable1757955531328 {
-    async up(queryRunner) {
-        await queryRunner.createTable(new typeorm_1.Table({
-            name: "situations",
+import { MigrationInterface, QueryRunner, Table } from "typeorm";
+
+
+export class CreateProductSituationTable1759253281363 implements MigrationInterface {
+
+    public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.createTable(new Table({
+            name: "productSituation",
             columns: [
                 {
                     name: "id",
@@ -15,7 +15,7 @@ class CreateSituationTable1757955531328 {
                     generationStrategy: "increment"
                 },
                 {
-                    name: "nameSituation",
+                    name: "name",
                     type: "varchar",
                     isUnique: true,
                 },
@@ -33,8 +33,9 @@ class CreateSituationTable1757955531328 {
             ]
         }));
     }
-    async down(queryRunner) {
-        await queryRunner.dropTable("situations");
+
+    public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.dropTable("productSituation")
     }
+
 }
-exports.CreateSituationTable1757955531328 = CreateSituationTable1757955531328;

@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateUsersTable1757955546919 = void 0;
+exports.CreateProductCategoriaTable1759253309031 = void 0;
 const typeorm_1 = require("typeorm");
-class CreateUsersTable1757955546919 {
+class CreateProductCategoriaTable1759253309031 {
     async up(queryRunner) {
         await queryRunner.createTable(new typeorm_1.Table({
-            name: "users",
+            name: "productCategoria",
             columns: [
                 {
                     name: "id",
@@ -16,16 +16,8 @@ class CreateUsersTable1757955546919 {
                 },
                 {
                     name: "name",
-                    type: "varchar"
-                },
-                {
-                    name: "email",
                     type: "varchar",
                     isUnique: true,
-                },
-                {
-                    name: "situationId",
-                    type: "int",
                 },
                 {
                     name: "createdAt",
@@ -40,21 +32,9 @@ class CreateUsersTable1757955546919 {
                 }
             ]
         }));
-        //CRIAR CHAVE ESTRANGEIRA
-        await queryRunner.createForeignKey("users", new typeorm_1.TableForeignKey({
-            columnNames: ["situationId"],
-            referencedTableName: "situations",
-            referencedColumnNames: ["id"],
-            onDelete: "CASCADE",
-        }));
     }
     async down(queryRunner) {
-        const table = await queryRunner.getTable("users");
-        const foreignKey = table?.foreignKeys.find((fk) => fk.columnNames.includes("situationId"));
-        if (foreignKey) {
-            await queryRunner.dropForeignKey("users", foreignKey);
-        }
-        await queryRunner.dropTable("users");
+        await queryRunner.dropTable("productCategoria");
     }
 }
-exports.CreateUsersTable1757955546919 = CreateUsersTable1757955546919;
+exports.CreateProductCategoriaTable1759253309031 = CreateProductCategoriaTable1759253309031;

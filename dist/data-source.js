@@ -11,6 +11,9 @@ const Situations_1 = require("./entity/Situations");
 const Users_1 = require("./entity/Users");
 // Importar variáveis de ambiente
 const dotenv_1 = __importDefault(require("dotenv"));
+const Products_1 = require("./entity/Products");
+const ProductSituation_1 = require("./entity/ProductSituation");
+const ProductCategoria_1 = require("./entity/ProductCategoria");
 // Carregando as variaveis do .env
 dotenv_1.default.config();
 const dialect = process.env.DB_DIALECT ?? "mysql";
@@ -23,7 +26,7 @@ exports.AppDataSource = new typeorm_1.DataSource({
     database: process.env.DB_DATABASE,
     synchronize: false,
     logging: true,
-    entities: [Situations_1.Situation, Users_1.User],
+    entities: [Situations_1.Situation, Users_1.User, ProductCategoria_1.ProductCategoria, ProductSituation_1.ProductSituation, Products_1.Product],
     subscribers: [],
     migrations: [
         // aceita rodar tanto em src (.ts) quanto em dist (.js)
