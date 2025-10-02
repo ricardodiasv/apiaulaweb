@@ -15,13 +15,8 @@ class CreateProductTable1759347128124 {
                     generationStrategy: "increment"
                 },
                 {
-                    name: "name",
+                    name: "nameProduct",
                     type: "varchar"
-                },
-                {
-                    name: "email",
-                    type: "varchar",
-                    isUnique: true,
                 },
                 {
                     name: "productCategoryId",

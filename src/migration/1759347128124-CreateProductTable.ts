@@ -14,14 +14,10 @@ export class CreateProductTable1759347128124 implements MigrationInterface {
                            generationStrategy: "increment"
                        },
                        {
-                           name: "name",
+                           name: "nameProduct",
                            type: "varchar"
                        },
-                       {
-                           name: "email",
-                           type: "varchar",
-                           isUnique: true,
-                       },
+                       
                        {
                            name: "productCategoryId",
                            type: "int",

@@ -3,32 +3,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-//Importar a biblioteca Express
 const express_1 = __importDefault(require("express"));
 const data_source_1 = require("../data-source");
-const Products_1 = require("../entity/Products");
 const PaginationService_1 = require("../services/PaginationService");
-//entity products
-// Criar a Aplicação Express
+const Products_1 = require("../entity/Products");
 const router = express_1.default.Router();
-//Criar a LISTA
 router.get("/products", async (req, res) => {
+    console.log("Entrou na rota /productproduct");
     try {
         const productRepository = data_source_1.AppDataSource.getRepository(Products_1.Product);
+        console.log("Repository carregado:", productRepository.metadata.tableName);
         const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 10;
-        const result = await PaginationService_1.PaginationService.paginate(productRepository, page, limit, { id: "DESC" });
+        const limite = Number(req.query.limite) || 10;
+        console.log(`page=${page}, limite=${limite}`);
+        const result = await PaginationService_1.PaginationService.paginate(productRepository, page, limite, { id: "DESC" });
+        console.log("Paginate retornou", result);
         res.status(200).json(result);
         return;
     }
     catch (error) {
+        console.error("Erro na rota /product:", error);
         res.status(500).json({
-            messagem: "Erro ao listar a situação!",
+            mensagem: "Erro ao listar produto!"
         });
         return;
     }
 });
-//Criar a visualização do item cadastrado em situação
 router.get("/products/:id", async (req, res) => {
     try {
         const { id } = req.params;
@@ -36,7 +36,7 @@ router.get("/products/:id", async (req, res) => {
         const product = await productRepository.findOneBy({ id: parseInt(id) });
         if (!product) {
             res.status(404).json({
-                messagem: "Situação não encontrada!",
+                mensagem: "Produto não encontrado!"
             });
             return;
         }
@@ -45,31 +45,70 @@ router.get("/products/:id", async (req, res) => {
     }
     catch (error) {
         res.status(500).json({
-            messagem: "Erro ao visualizar o produto!",
+            mensagem: "Erro ao visualizar produto!"
         });
         return;
     }
 });
-//Criar a rota POST principal
-router.post("/situations", async (req, res) => {
+router.post("/products", async (req, res) => {
     try {
-        var data = req.body;
+        const ct = (req.headers["content-type"] || "").toLowerCase();
+        if (!ct.includes("application/json")) {
+            return res.status(415).json({
+                mensagem: "Envie o corpo como JSON (Content-Type: application/json)",
+            });
+        }
+        // Extração e validação
+        let { nameProduct, productCategoryId, productSituationId } = req.body ?? {};
+        if (typeof nameProduct !== "string" || !nameProduct.trim()) {
+            return res.status(400).json({ mensagem: "nameProduct é obrigatório" });
+        }
+        nameProduct = nameProduct.trim();
+        if (productCategoryId === undefined || productSituationId === undefined) {
+            return res.status(400).json({
+                mensagem: "productCategoryId e productSituationId são obrigatórios",
+            });
+        }
+        productCategoryId = Number(productCategoryId);
+        productSituationId = Number(productSituationId);
+        if (!Number.isInteger(productCategoryId) || !Number.isInteger(productSituationId)) {
+            return res.status(400).json({
+                mensagem: "productCategoryId e productSituationId devem ser inteiros",
+            });
+        }
+        const [cat] = await data_source_1.AppDataSource.query("SELECT id FROM productCategoria WHERE id = ? LIMIT 1", [productCategoryId]);
+        if (!cat) {
+            return res.status(400).json({ mensagem: "Categoria (productCategoryId) inexistente" });
+        }
+        const [sit] = await data_source_1.AppDataSource.query("SELECT id FROM productSituation WHERE id = ? LIMIT 1", [productSituationId]);
+        if (!sit) {
+            return res.status(400).json({ mensagem: "Situação (productSituationId) inexistente" });
+        }
         const productRepository = data_source_1.AppDataSource.getRepository(Products_1.Product);
-        const newProduct = productRepository.create(data);
-        await productRepository.save(newProduct);
-        res.status(201).json({
-            messagem: "Situação cadastrada com sucesso!",
-            product: newProduct,
+        const newProduct = productRepository.create({
+            nameProduct,
+            productCategoria: { id: productCategoryId }, // relação -> coluna FK
+            productSituation: { id: productSituationId }, // relação -> coluna FK
+        });
+        const saved = await productRepository.save(newProduct);
+        return res.status(201).json({
+            mensagem: "Produto cadastrado com sucesso!",
+            product: saved,
         });
     }
     catch (error) {
-        res.status(500).json({
-            messagem: "Erro ao cadastrar produto!",
-        });
+        if (error?.errno === 1452) {
+            return res.status(400).json({
+                mensagem: "Categoria/Situação não encontrada (FK inválida)",
+            });
+        }
+        if (error?.errno === 1062) {
+            return res.status(409).json({ mensagem: "Registro duplicado" });
+        }
+        console.error("Erro ao cadastrar produto:", error);
+        return res.status(500).json({ mensagem: "Erro ao cadastrar produto!" });
     }
 });
-//====================
-//Atualiza os dados do banco de dados
 router.put("/products/:id", async (req, res) => {
     try {
         const { id } = req.params;
@@ -78,27 +117,24 @@ router.put("/products/:id", async (req, res) => {
         const product = await productRepository.findOneBy({ id: parseInt(id) });
         if (!product) {
             res.status(404).json({
-                messagem: "Situação não encontrada!",
+                mensagem: "produto não encontrada!"
             });
             return;
         }
-        //Atualiza os dados
         productRepository.merge(product, data);
-        //Salvar as alterações de dados
-        const updateProduct = await productRepository.save(product);
+        const updateproduct = await productRepository.save(product);
         res.status(200).json({
-            messagem: "Produto atualizado com sucesso!",
-            product: updateProduct,
+            mensagem: "produto atualizada com sucesso!",
+            Products: updateproduct,
         });
     }
     catch (error) {
         res.status(500).json({
-            messagem: "Erro ao atualizar o produto!",
+            mensagem: "Erro ao atualizar produto!"
         });
         return;
     }
 });
-//Remove o item cadastrado no banco de dados
 router.delete("/products/:id", async (req, res) => {
     try {
         const { id } = req.params;
@@ -106,22 +142,20 @@ router.delete("/products/:id", async (req, res) => {
         const product = await productRepository.findOneBy({ id: parseInt(id) });
         if (!product) {
             res.status(404).json({
-                messagem: "Situação não encontrada!",
+                mensagem: "Produto não encontrado!"
             });
             return;
         }
-        //Remover os dados no banco de dados
         await productRepository.remove(product);
         res.status(200).json({
-            messagem: "Produto foi removido com sucesso!",
+            mensagem: "produto removido com sucesso!",
         });
     }
     catch (error) {
         res.status(500).json({
-            messagem: "Erro ao deletar o produto!",
+            mensagem: "Erro ao remover produto!"
         });
         return;
     }
 });
-//Exportar a instrução da rota
 exports.default = router;

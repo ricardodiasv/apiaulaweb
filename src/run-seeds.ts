@@ -1,4 +1,7 @@
 import { AppDataSource } from "./data-source"
+import CreateProductCategoriaSeeds from "./seeds/CreateProductCategoriaSeeds";
+import CreateProductsSeeds from "./seeds/CreateProductSeeds";
+import CreateSituationCategoriaSeeds from "./seeds/CreateProductSituationSeeds";
 import CreateSituationsSeeds from "./seeds/CreateSituationsSeeds";
 
 const runSeeds = async() =>{
@@ -11,8 +14,20 @@ const runSeeds = async() =>{
     //Cria a instancia da classes de seed
     const situationsSeeds = new CreateSituationsSeeds();
 
+    const productSeeds = new CreateProductsSeeds();
+
+    const productCategoriaSeeds = new CreateProductCategoriaSeeds();
+
+    const productSituationSeeds = new CreateSituationCategoriaSeeds();
+
     //Executa as Seeds
     await situationsSeeds.run(AppDataSource);
+
+    await productCategoriaSeeds.run(AppDataSource)
+    
+    await productSituationSeeds.run(AppDataSource)
+    
+    //await productSeeds.run(AppDataSource)
 
   }catch(error){
 

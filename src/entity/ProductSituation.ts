@@ -7,7 +7,7 @@ export class ProductSituation{
   id!: number;
 
   @Column({unique: true})
-  nameProductSituation!: string;
+  name!: string;
 
   @Column({type: "timestamp", default:() => "CURRENT_TIMESTAMP"})
   createdAt!: Date
