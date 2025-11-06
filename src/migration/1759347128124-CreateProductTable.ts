@@ -1,3 +1,5 @@
+//src\migration\1759347128124-CreateProductTable.ts
+
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from "typeorm";
 
 export class CreateProductTable1759347128124 implements MigrationInterface {

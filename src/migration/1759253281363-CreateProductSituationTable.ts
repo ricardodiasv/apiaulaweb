@@ -1,3 +1,5 @@
+// src\migration\1759253281363-CreateProductSituationTable.ts
+
 import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
 

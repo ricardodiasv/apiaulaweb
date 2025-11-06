@@ -1,4 +1,5 @@
 "use strict";
+//src\migration\1759347128124-CreateProductTable.ts
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateProductTable1759347128124 = void 0;
 const typeorm_1 = require("typeorm");

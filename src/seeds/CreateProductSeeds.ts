@@ -1,3 +1,5 @@
+//src\seeds\CreateProductSeeds.ts
+
 import { DataSource } from "typeorm"
 import { Product } from "../entity/Products";
 export default class CreateProductsSeeds {

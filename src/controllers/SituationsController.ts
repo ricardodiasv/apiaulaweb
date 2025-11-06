@@ -3,6 +3,7 @@ import express, {Request, Response} from "express";
 import { AppDataSource } from "../data-source";
 import { Situation } from "../entity/Situations";
 import { PaginationService } from "../services/PaginationService";
+import * as yup from 'yup';
 
 
 
@@ -72,6 +73,14 @@ router.post("/situations", async(req:Request, res:Response)=>{
   try{
     var data = req.body;
 
+    const schema = yup.object().shape({
+        nameSituation: yup.string()
+        .required("O campo nome é obrigatório!")
+        .min(3, "O campo nome deve ter no mínimo 3 caracteres!")
+    });
+
+    await schema.validate(data, {abortEarly: false});
+
     const situationRepository = AppDataSource.getRepository(Situation);
 
     const newSituation = situationRepository.create(data);
@@ -84,6 +93,12 @@ router.post("/situations", async(req:Request, res:Response)=>{
     });
 
   }catch(error){
+    if(error instanceof yup.ValidationError){
+      res.status(400).json({
+        messagem : error.errors
+      });
+      return;
+    }
 
     res.status(500).json({
       messagem : "Erro ao cadastrar situação!",
@@ -101,6 +116,17 @@ router.put("/situations/:id", async(req:Request, res:Response)=>{
     const { id } = req.params;
 
     var data = req.body;
+
+    const schema = yup.object().shape({
+      nameSituation: yup.string()
+      .required("O campo nome é obrigatório!")
+      .min(3, "O campo nome deve ter no mínimo 3 caracteres!")
+  });
+
+  await schema.validate(data, {abortEarly: false});
+
+
+
 
     const situationRepository = AppDataSource.getRepository(Situation);
 
@@ -125,10 +151,15 @@ router.put("/situations/:id", async(req:Request, res:Response)=>{
     });
 
   }catch(error){
+    if(error instanceof yup.ValidationError){
+      res.status(400).json({
+        messagem : error.errors
+      });
+      return;
+    }
     res.status(500).json({
       messagem : "Erro ao atualizar a situação!",
     });
-    return
   }
  
 

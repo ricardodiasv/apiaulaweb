@@ -1,3 +1,5 @@
+// src\entity\Users.ts
+
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne,JoinColumn} from "typeorm"
 import { Situation } from "./Situations";
 

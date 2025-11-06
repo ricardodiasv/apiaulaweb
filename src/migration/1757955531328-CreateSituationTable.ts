@@ -1,3 +1,5 @@
+//src\migration\1757955531328-CreateSituationTable.ts
+
 import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
 export class CreateSituationTable1757955531328 implements MigrationInterface {

@@ -1,4 +1,5 @@
 "use strict";
+// src\seeds\CreateProductSituationSeeds.ts
 Object.defineProperty(exports, "__esModule", { value: true });
 const ProductSituation_1 = require("../entity/ProductSituation");
 class CreateSituationCategoriaSeeds {

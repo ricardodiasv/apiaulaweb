@@ -1,3 +1,5 @@
+//src\entity\Products.ts
+
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn, ManyToMany, ManyToOne } from "typeorm"
 import { ProductCategoria } from "./ProductCategoria";
 import { ProductSituation } from "./ProductSituation";

@@ -1,3 +1,5 @@
+//src\migration\1757955546919-CreateUsersTable.ts
+
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from "typeorm";
 
 export class CreateUsersTable1757955546919 implements MigrationInterface {

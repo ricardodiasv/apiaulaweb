@@ -1,3 +1,5 @@
+//src\migration\1759253309031-CreateProductCategoriaTable.ts
+
 import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
 

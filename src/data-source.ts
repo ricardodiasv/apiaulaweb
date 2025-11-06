@@ -9,6 +9,7 @@ import dotenv from "dotenv";
 import { Product } from "./entity/Products";
 import { ProductSituation } from "./entity/ProductSituation";
 import { ProductCategoria } from "./entity/ProductCategoria";
+
 // Carregando as variaveis do .env
 dotenv.config();
 
