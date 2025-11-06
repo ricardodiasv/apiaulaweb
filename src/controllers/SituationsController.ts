@@ -4,6 +4,7 @@ import { AppDataSource } from "../data-source";
 import { Situation } from "../entity/Situations";
 import { PaginationService } from "../services/PaginationService";
 import * as yup from 'yup';
+import { Not } from "typeorm";
 
 
 
@@ -83,6 +84,26 @@ router.post("/situations", async(req:Request, res:Response)=>{
 
     const situationRepository = AppDataSource.getRepository(Situation);
 
+    const existingSituation = await situationRepository.findOne({
+      where : {nameSituation: data.nameSituation}
+    })
+
+    if(existingSituation){
+        res.status(400).json({
+          messagem : "Já existe uma situação cadastrada com esse nome!"
+        });
+        return;
+    }
+
+
+
+
+
+
+
+
+
+
     const newSituation = situationRepository.create(data);
 
     await situationRepository.save(newSituation);
@@ -137,6 +158,20 @@ router.put("/situations/:id", async(req:Request, res:Response)=>{
           messagem : "Situação não encontrada!",
         });
       return
+    }
+
+    const existingSituation = await situationRepository.findOne({
+      where : {
+        nameSituation: data.nameSituation,
+        id: Not(parseInt(id!)),
+      }
+    })
+
+    if(existingSituation){
+        res.status(400).json({
+          messagem : "Já existe uma situação cadastrada com esse nome!"
+        });
+        return;
     }
 
     //Atualiza os dados

@@ -42,6 +42,7 @@ const data_source_1 = require("../data-source");
 const Situations_1 = require("../entity/Situations");
 const PaginationService_1 = require("../services/PaginationService");
 const yup = __importStar(require("yup"));
+const typeorm_1 = require("typeorm");
 // Criar a Aplicação Express
 const router = express_1.default.Router();
 //Criar a LISTA
@@ -94,6 +95,15 @@ router.post("/situations", async (req, res) => {
         });
         await schema.validate(data, { abortEarly: false });
         const situationRepository = data_source_1.AppDataSource.getRepository(Situations_1.Situation);
+        const existingSituation = await situationRepository.findOne({
+            where: { nameSituation: data.nameSituation }
+        });
+        if (existingSituation) {
+            res.status(400).json({
+                messagem: "Já existe uma situação cadastrada com esse nome!"
+            });
+            return;
+        }
         const newSituation = situationRepository.create(data);
         await situationRepository.save(newSituation);
         res.status(201).json({
@@ -129,6 +139,18 @@ router.put("/situations/:id", async (req, res) => {
         if (!situation) {
             res.status(404).json({
                 messagem: "Situação não encontrada!",
+            });
+            return;
+        }
+        const existingSituation = await situationRepository.findOne({
+            where: {
+                nameSituation: data.nameSituation,
+                id: (0, typeorm_1.Not)(parseInt(id)),
+            }
+        });
+        if (existingSituation) {
+            res.status(400).json({
+                messagem: "Já existe uma situação cadastrada com esse nome!"
             });
             return;
         }
