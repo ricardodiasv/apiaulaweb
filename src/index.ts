@@ -21,6 +21,7 @@ app.use(cors());
 //Incluir as Controllers
 import TestConnectionController from "./controllers/TestConnectionController";
 import AuthController from "./controllers/AuthController";
+import UsersController from "./controllers/UsersControllers";
 import SituationsController from "./controllers/SituationsController";
 import ProductCategoriaController from "./controllers/ProductCategoriaController"
 import ProductSituationController from "./controllers/ProductSituationController"
@@ -28,12 +29,13 @@ import ProductsController from "./controllers/ProductsController"
 
 
 //Criar as rotas
-app.use('/', TestConnectionController)
-app.use('/', AuthController)
-app.use('/', SituationsController)
+app.use('/', TestConnectionController);
+app.use('/', AuthController);
+app.use('/', UsersController);
+app.use('/', SituationsController);
 app.use('/', ProductCategoriaController);
 app.use('/', ProductSituationController);
-app.use('/', ProductsController)
+app.use('/', ProductsController);
 
 //Iniciar o servidor na porta 8080
 app.listen(process.env.PORT, ()=>{

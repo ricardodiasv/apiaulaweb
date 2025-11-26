@@ -3,6 +3,7 @@ import CreateProductCategoriaSeeds from "./seeds/CreateProductCategoriaSeeds";
 import CreateProductsSeeds from "./seeds/CreateProductSeeds";
 import CreateSituationCategoriaSeeds from "./seeds/CreateProductSituationSeeds";
 import CreateSituationsSeeds from "./seeds/CreateSituationsSeeds";
+import CreateUsersSeeds from "./seeds/CreateUsersSeed";
 
 const runSeeds = async() =>{
   console.log("Conectando ao banco de dados...")
@@ -13,21 +14,17 @@ const runSeeds = async() =>{
   try{
     //Cria a instancia da classes de seed
     const situationsSeeds = new CreateSituationsSeeds();
-
+    const userSeed = new CreateUsersSeeds();
     const productSeeds = new CreateProductsSeeds();
-
     const productCategoriaSeeds = new CreateProductCategoriaSeeds();
-
     const productSituationSeeds = new CreateSituationCategoriaSeeds();
 
     //Executa as Seeds
     await situationsSeeds.run(AppDataSource);
-
-    await productCategoriaSeeds.run(AppDataSource)
-    
-    await productSituationSeeds.run(AppDataSource)
-    
-    //await productSeeds.run(AppDataSource)
+    await userSeed.run(AppDataSource);
+    await productCategoriaSeeds.run(AppDataSource);
+    await productSituationSeeds.run(AppDataSource);
+    await productSeeds.run(AppDataSource);
 
   }catch(error){
 
