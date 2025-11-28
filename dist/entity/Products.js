@@ -17,6 +17,7 @@ const ProductSituation_1 = require("./ProductSituation");
 let Product = class Product {
     id;
     nameProduct;
+    slug;
     productCategoria;
     productSituation;
     createdAt;
@@ -31,6 +32,10 @@ __decorate([
     (0, typeorm_1.Column)({ unique: true }),
     __metadata("design:type", String)
 ], Product.prototype, "nameProduct", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ unique: true }),
+    __metadata("design:type", String)
+], Product.prototype, "slug", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => ProductCategoria_1.ProductCategoria, (productCategoria) => productCategoria.products),
     (0, typeorm_1.JoinColumn)({ name: "productCategoryId" }),

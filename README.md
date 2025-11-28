@@ -80,13 +80,19 @@ npm i --save-dev @types/dotenv
 
 Criar a migração que será usada para criar a tabela no banco de dados
 ---
-npx typeorm migration:create path-to-migrations-dir/CreateSituationTable
+npx typeorm migration:create src/migration/CreateSituationTable
 ---
 
-npx typeorm migration:create path-to-migrations-dir/CreateUsersTable
+npx typeorm migration:create src/migration/CreateUsersTable
 ---
 
-Executar as migratinos para criar as tabelas no banco de dados.
+npx typeorm migration:create src/migration/AddSlugToProducts
+---
+
+npx typeorm migration:create src/migration/AddPasswordToUsers
+---
+
+Executar as migrations para criar as tabelas no banco de dados.
 ---
 
 npx typeorm migration:run -d dist/data-source.js

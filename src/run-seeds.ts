@@ -15,9 +15,9 @@ const runSeeds = async() =>{
     //Cria a instancia da classes de seed
     const situationsSeeds = new CreateSituationsSeeds();
     const userSeed = new CreateUsersSeeds();
-    const productSeeds = new CreateProductsSeeds();
     const productCategoriaSeeds = new CreateProductCategoriaSeeds();
     const productSituationSeeds = new CreateSituationCategoriaSeeds();
+    const productSeeds = new CreateProductsSeeds();
 
     //Executa as Seeds
     await situationsSeeds.run(AppDataSource);
@@ -25,6 +25,7 @@ const runSeeds = async() =>{
     await productCategoriaSeeds.run(AppDataSource);
     await productSituationSeeds.run(AppDataSource);
     await productSeeds.run(AppDataSource);
+    
 
   }catch(error){
 

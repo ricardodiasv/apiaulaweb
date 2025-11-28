@@ -34,12 +34,14 @@ export default class CreateUsersSeeds{
         id: 1,
         name: "Ricardo Gabriel",
         email: "ricardo@ricardo.com.br",
+        password : "123456",
         situation: situation,
       },
       {
         id: 2,
         name: "Pedro",
         email: "pedro@ricardo.com.br",
+        password : "123456",
         situation: situation,
       },
     ];
@@ -50,3 +52,4 @@ export default class CreateUsersSeeds{
   
   }
 }
+

@@ -12,6 +12,11 @@ export class Product{
   @Column({unique: true})
   nameProduct!: string;
 
+  
+  @Column({ unique: true })
+  slug!: string;
+
+
   @ManyToOne(() => ProductCategoria, (productCategoria) => productCategoria.products)
   @JoinColumn({name: "productCategoryId" })
   productCategoria!: ProductCategoria;

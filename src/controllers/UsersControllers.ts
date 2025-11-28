@@ -84,6 +84,7 @@ router.get("/users/:id", async (req: Request, res: Response) => {
 {
     "name" : "Ricardo Gabriel",
     "email" : "ricardo@ricardo.com.br",
+    "password" : "123456",
     "situation" : 1
 }
 */
@@ -98,6 +99,7 @@ router.post("/users", async (req: Request, res: Response) => {
     const schema = yup.object().shape({
       name: yup.string().required("O campo nome é obrigatório!").min(3, "O campo nome deve ter no mínimo 3 caracteres"),
       email: yup.string().email("E-mail inválido").required("O campo e-mail é obrigatório"),
+      password: yup.string().required("O campo senha é obrigatório!").min(6, "O campo senha deve ter no mínimo 6 caracteres"),
       situation: yup.number().required("O campo situação é obrigatório"),
     });
 
@@ -273,3 +275,4 @@ router.delete("/users/:id", async (req: Request, res: Response) => {
 
 // Exportar a instrução que está dentro da constante router
 export default router;
+
