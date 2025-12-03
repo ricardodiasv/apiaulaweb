@@ -48,6 +48,8 @@ const PaginationService_1 = require("../services/PaginationService");
 const yup = __importStar(require("yup"));
 // Importar o Not para utilizar como restrição para ignorar o próprio id na consulta
 const typeorm_1 = require("typeorm");
+// Importar a biblioteca para criptografar a senha
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 // Criar a aplicação Express
 const router = express_1.default.Router();
 // Criar a rota para listar os usuários
@@ -140,6 +142,8 @@ router.post("/users", async (req, res) => {
             });
             return;
         }
+        // Criptografar a senha antes de salvar
+        data.password = await bcryptjs_1.default.hash(data.password, 10);
         // Criar um novo registro
         const newUser = userRepository.create(data);
         // Salvar o registro no banco de dados
@@ -160,6 +164,64 @@ router.post("/users", async (req, res) => {
         }
         console.error(error);
         return res.status(500).json({ message: "Erro interno ao cadastrar o usuário" });
+    }
+});
+// Crar a rota para editar senha do usuário
+// Endereço para acessar a API através da aplicação externa com o verbo PUT: http:localhost:8080/users-password/:id
+// A aplicação externa deve indicar que está enviado os dados em formato de objeto: Content-Type: application/json
+// Dados em formato de objeto
+/*
+{
+  "password":"123456"
+}
+*/
+router.put("/users-password/:id", async (req, res) => {
+    try {
+        // Obter o ID da situação a partir dos parâmetros da requisição
+        const { id } = req.params;
+        // Receber os dados enviados no corpo da requisição
+        const data = req.body;
+        // Validar os dados utilizando o yup
+        const schema = yup.object().shape({
+            password: yup.string().required("O campo senha é obrigatório!").min(6, "A senha deve ter no mínimo 6 caractéres")
+        });
+        // Verificar se os dados passaram pela validação
+        await schema.validate(data, { abortEarly: false });
+        // Criar uma instância do repositório de User
+        const userRepository = data_source_1.AppDataSource.getRepository(Users_1.User);
+        // Buscar o usuário no banco de dados pelo ID
+        const user = await userRepository.findOneBy({ id: parseInt(id) });
+        // Verificar se o usuário foi encontrado
+        if (!user) {
+            res.status(404).json({
+                message: "Usuário não encontrado!",
+            });
+            return;
+        }
+        // Criptografar a senha antes de salvar
+        data.password = await bcryptjs_1.default.hash(data.password, 10);
+        // Atualizar os dados do usuário
+        userRepository.merge(user, data);
+        // Salvar as alterações no banco de dados
+        const updateUser = await userRepository.save(user);
+        // Retornar resposta de sucesso
+        res.status(200).json({
+            message: "Senha do usuário atualizado com sucesso!",
+            user: updateUser
+        });
+    }
+    catch (error) {
+        if (error instanceof yup.ValidationError) {
+            // Retornar erros de validação
+            res.status(400).json({
+                message: error.errors
+            });
+            return;
+        }
+        // Retornar erro em caso de falha
+        res.status(500).json({
+            message: "Erro ao editar a senha do usuário!",
+        });
     }
 });
 // Criar a rota para editar um usuário

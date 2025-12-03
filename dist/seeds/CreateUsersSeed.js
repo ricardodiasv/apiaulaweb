@@ -1,8 +1,13 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 // Importar a entidade
 const Users_1 = require("../entity/Users");
 const Situations_1 = require("../entity/Situations");
+// Importar a biblioteca para criptografar a senha
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 class CreateUsersSeeds {
     async run(dataSource) {
         console.log("Iniciandoi o seed para a tabela 'users'...");
@@ -28,14 +33,14 @@ class CreateUsersSeeds {
                 id: 1,
                 name: "Ricardo Gabriel",
                 email: "ricardo@ricardo.com.br",
-                password: "123456",
+                password: await bcryptjs_1.default.hash("123456", 10),
                 situation: situation,
             },
             {
                 id: 2,
                 name: "Pedro",
                 email: "pedro@ricardo.com.br",
-                password: "123456",
+                password: await bcryptjs_1.default.hash("123456", 10),
                 situation: situation,
             },
         ];

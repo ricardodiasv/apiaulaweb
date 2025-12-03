@@ -10,6 +10,8 @@ import { PaginationService } from "../services/PaginationService";
 import * as yup from 'yup';
 // Importar o Not para utilizar como restrição para ignorar o próprio id na consulta
 import { Not } from "typeorm";
+// Importar a biblioteca para criptografar a senha
+import bcrypt from "bcryptjs"
 
 // Criar a aplicação Express
 const router = express.Router();
@@ -121,6 +123,8 @@ router.post("/users", async (req: Request, res: Response) => {
       });
       return;
     }
+    // Criptografar a senha antes de salvar
+    data.password = await bcrypt.hash(data.password, 10)
 
     // Criar um novo registro
     const newUser = userRepository.create(data);
@@ -148,6 +152,77 @@ router.post("/users", async (req: Request, res: Response) => {
     }
   
 });
+
+// Crar a rota para editar senha do usuário
+// Endereço para acessar a API através da aplicação externa com o verbo PUT: http:localhost:8080/users-password/:id
+// A aplicação externa deve indicar que está enviado os dados em formato de objeto: Content-Type: application/json
+// Dados em formato de objeto
+/*
+{
+  "password":"123456"
+}
+*/
+router.put("/users-password/:id", async (req: Request, res: Response) => {
+
+  try{
+      // Obter o ID da situação a partir dos parâmetros da requisição
+      const { id } = req.params;
+
+      // Receber os dados enviados no corpo da requisição
+      const data = req.body;
+
+      // Validar os dados utilizando o yup
+      const schema = yup.object().shape({
+        password: yup.string().required("O campo senha é obrigatório!").min(6, "A senha deve ter no mínimo 6 caractéres")
+      });
+
+      // Verificar se os dados passaram pela validação
+      await schema.validate(data, { abortEarly: false });
+
+      // Criar uma instância do repositório de User
+      const userRepository = AppDataSource.getRepository(User);
+
+      // Buscar o usuário no banco de dados pelo ID
+      const user = await userRepository.findOneBy({ id: parseInt(id!) })
+
+      // Verificar se o usuário foi encontrado
+      if(!user){
+        res.status(404).json({
+          message: "Usuário não encontrado!",
+        });
+        return;
+      }
+      
+      // Criptografar a senha antes de salvar
+      data.password = await bcrypt.hash(data.password, 10);
+
+      // Atualizar os dados do usuário
+      userRepository.merge(user, data);
+
+      // Salvar as alterações no banco de dados
+      const updateUser = await userRepository.save(user);
+
+      // Retornar resposta de sucesso
+      res.status(200).json({
+        message: "Senha do usuário atualizado com sucesso!",
+        user: updateUser
+      });
+
+    }catch(error){
+      if(error instanceof yup.ValidationError){
+        // Retornar erros de validação
+        res.status(400).json({
+          message: error.errors
+        });
+        return;
+      }
+
+      // Retornar erro em caso de falha
+      res.status(500).json({
+        message: "Erro ao editar a senha do usuário!",
+      });
+    }
+    });
 
 // Criar a rota para editar um usuário
 // Endereço para acessar a API através da aplicação externa com o verbo PUT: http://localhost:8080/users/:id

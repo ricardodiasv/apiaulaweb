@@ -3,6 +3,8 @@ import { DataSource } from "typeorm";
 // Importar a entidade
 import { User } from "../entity/Users";
 import { Situation } from "../entity/Situations";
+// Importar a biblioteca para criptografar a senha
+import bcrypt from "bcryptjs";
 
 export default class CreateUsersSeeds{
   public async run(dataSource: DataSource): Promise<void>{
@@ -34,14 +36,14 @@ export default class CreateUsersSeeds{
         id: 1,
         name: "Ricardo Gabriel",
         email: "ricardo@ricardo.com.br",
-        password : "123456",
+        password : await bcrypt.hash("123456", 10),
         situation: situation,
       },
       {
         id: 2,
         name: "Pedro",
         email: "pedro@ricardo.com.br",
-        password : "123456",
+        password : await bcrypt.hash("123456", 10),
         situation: situation,
       },
     ];
