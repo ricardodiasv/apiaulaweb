@@ -92,6 +92,9 @@ npx typeorm migration:create src/migration/AddSlugToProducts
 npx typeorm migration:create src/migration/AddPasswordToUsers
 ---
 
+npx typeorm migration:create src/migration/AddRecoverPasswordToUsers
+---
+
 Executar as migrations para criar as tabelas no banco de dados.
 ---
 

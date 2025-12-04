@@ -23,6 +23,7 @@ let User = class User {
     name;
     email;
     password;
+    recoverPassword;
     situation;
     createdAt;
     updatedAt;
@@ -47,6 +48,10 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ unique: true }),
+    __metadata("design:type", String)
+], User.prototype, "recoverPassword", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => Situations_1.Situation, (situation) => situation.users),
     (0, typeorm_1.JoinColumn)({ name: "situationId" }),
