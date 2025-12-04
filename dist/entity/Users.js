@@ -9,10 +9,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const typeorm_1 = require("typeorm");
 const Situations_1 = require("./Situations");
+// Importar a biblioteca para criptografar a senha
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 let User = class User {
     id;
     name;
@@ -21,6 +26,9 @@ let User = class User {
     situation;
     createdAt;
     updatedAt;
+    async comparePassword(password) {
+        return bcryptjs_1.default.compare(password, this.password);
+    }
 };
 exports.User = User;
 __decorate([

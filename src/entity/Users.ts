@@ -2,6 +2,8 @@
 
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne,JoinColumn} from "typeorm"
 import { Situation } from "./Situations";
+// Importar a biblioteca para criptografar a senha
+import bcrypt from "bcryptjs"
 
 @Entity("users")
 export class User {
@@ -26,4 +28,8 @@ export class User {
 
     @Column({type: "timestamp", default:() => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP"})
     updatedAt!: Date;
+
+    async comparePassword(password:string): Promise<boolean>{
+        return bcrypt.compare(password, this.password)
+    }
 }

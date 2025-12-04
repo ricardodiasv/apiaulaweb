@@ -132,3 +132,15 @@ Instalar os tipos do bcryptjs
 ---
 
 npm install --save-dev @types/bcryptjs
+---
+
+Instalar a dependencia JWT para manipular token de autenticação
+---
+
+npm install jsonwebtoken
+---
+
+Instalar os tipos do jsonwebtoken
+---
+
+npm i --save-dev @types/jsonwebtoken
