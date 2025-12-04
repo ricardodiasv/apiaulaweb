@@ -147,3 +147,15 @@ Instalar os tipos do jsonwebtoken
 ---
 
 npm i --save-dev @types/jsonwebtoken
+---
+
+Instalar o módulo para enviar e-mail
+---
+
+npm install nodemailer
+---
+
+Instalar os tipos do nodemailer
+---
+
+npm install --save-dev @types/nodemailer

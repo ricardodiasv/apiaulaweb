@@ -46,6 +46,7 @@ const data_source_1 = require("../data-source");
 // Importar a entidade
 const Users_1 = require("../entity/Users");
 const crypto_1 = __importDefault(require("crypto"));
+const nodemailer_1 = __importDefault(require("nodemailer"));
 // Criar a Aplicação Express
 const router = express_1.default.Router();
 // Criar a rota para realizar o login
@@ -115,11 +116,50 @@ router.post("/recover-password", async (req, res) => {
         }
         user.recoverPassword = crypto_1.default.randomBytes(32).toString("hex");
         await userRepository.save(user);
-        // Retornar resposta de sucesso
-        res.status(200).json({
-            message: "Gerado o link para recuperar a senha!",
-            urlRecoverPassword: `${data.urlRecoverPassword}?email=${data.email}&key=${user.recoverPassword}`,
-            key: user.recoverPassword,
+        const transporter = nodemailer_1.default.createTransport({
+            host: process.env.EMAIL_HOST,
+            port: Number(process.env.EMAIL_PORT),
+            secure: false,
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+        var message_content = {
+            from: process.env.EMAIL_FROM,
+            to: data.email,
+            subject: "Recuperar Senha",
+            text: `Prezando(a) ${user.name} \n\n
+      Informamos que a sua solicitação de alteração de senha foi recebida com sucesso. \n\n
+      Clique ou copie o link para criar uma nova senha em nosso sistema:
+      ${data.urlRecoverPassword}?email=${data.email}key=${user.recoverPassword}\n\n
+      Esta mensagem foi enviada a você pela empresa ${process.env.APP}.\n\n
+      Você está recebendo porque está cadastrado no banco de dados da empresa ${process.env.APP}.
+      Nenhum e-mail enviado pela empresa ${process.env.APP} tem arquivos anexadas ou solicita
+      o preenchimento de senhas e informações cadastrais. \n\n`,
+            html: `Prezado(a) ${user.name} <br><br>
+      Informamos que a sua solicitação de alteração de senha foi recebida com sucesso.<br><br>
+      Clique no link para criar uma nova senha em nosso sistema:
+      <a href='${data.urlRecoverPassword}?email=${data.email}&key=${user.recoverPassword}'>${data.urlRecoverPassword}?email=${data.email}$key=${user.recoverPassword}</a><br><br> 
+      Esta mensagem foi enviada a você pela empresa ${process.env.APP}.<br><br>Você está recebendo porque está cadastrado no banco de dados da empresa ${process.env.APP}.
+      Nenhum e-mail enviado pela empresa ${process.env.APP} tem arquivos anexados ou solicita o preenchimento de senhas e informações cadastrais.<br><br>`, // HTML body
+        };
+        transporter.sendMail(message_content, function (err) {
+            if (err) {
+                console.log("Erro ao enviar email:", err);
+                res.status(200).json({
+                    message: `E-mail não enviado, tente novamente ou contate ${process.env.EMAIL_ADM}`,
+                });
+                return;
+            }
+            else {
+                // Retornar resposta de sucesso
+                res.status(200).json({
+                    message: "Email enviado! Verifique sua caixa de entrada!",
+                    urlRecoverPassword: `${data.urlRecoverPassword}?email=${data.email}&key=${user.recoverPassword}`,
+                });
+                return;
+            }
         });
     }
     catch (error) {
