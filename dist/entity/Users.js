@@ -27,6 +27,11 @@ let User = class User {
     situation;
     createdAt;
     updatedAt;
+    async hashPassword() {
+        if (this.password) {
+            this.password = await bcryptjs_1.default.hash(this.password, 10);
+        }
+    }
     async comparePassword(password) {
         return bcryptjs_1.default.compare(password, this.password);
     }
@@ -65,6 +70,13 @@ __decorate([
     (0, typeorm_1.Column)({ type: "timestamp", default: () => "CURRENT_TIMESTAMP", onUpdate: "CURRENT_TIMESTAMP" }),
     __metadata("design:type", Date)
 ], User.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.BeforeInsert)(),
+    (0, typeorm_1.BeforeUpdate)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], User.prototype, "hashPassword", null);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)("users")
 ], User);

@@ -48,8 +48,6 @@ const PaginationService_1 = require("../services/PaginationService");
 const yup = __importStar(require("yup"));
 // Importar o Not para utilizar como restrição para ignorar o próprio id na consulta
 const typeorm_1 = require("typeorm");
-// Importar a biblioteca para criptografar a senha
-const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const authMiddleware_1 = require("../middlewares/authMiddleware");
 // Criar a aplicação Express
 const router = express_1.default.Router();
@@ -144,7 +142,7 @@ router.post("/users", authMiddleware_1.verifyToken, async (req, res) => {
             return;
         }
         // Criptografar a senha antes de salvar
-        data.password = await bcryptjs_1.default.hash(data.password, 10);
+        //data.password = await bcrypt.hash(data.password, 10)
         // Criar um novo registro
         const newUser = userRepository.create(data);
         // Salvar o registro no banco de dados
@@ -200,7 +198,7 @@ router.put("/users-password/:id", authMiddleware_1.verifyToken, async (req, res)
             return;
         }
         // Criptografar a senha antes de salvar
-        data.password = await bcryptjs_1.default.hash(data.password, 10);
+        //data.password = await bcrypt.hash(data.password, 10);
         // Atualizar os dados do usuário
         userRepository.merge(user, data);
         // Salvar as alterações no banco de dados
