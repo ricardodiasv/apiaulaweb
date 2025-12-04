@@ -50,11 +50,12 @@ const yup = __importStar(require("yup"));
 const typeorm_1 = require("typeorm");
 // Importar a biblioteca para criptografar a senha
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const authMiddleware_1 = require("../middlewares/authMiddleware");
 // Criar a aplicação Express
 const router = express_1.default.Router();
 // Criar a rota para listar os usuários
 // Endereço para acessar a api através da aplicação externa com o verbo GET: http://localhost:8080/users?page=1&limit=10
-router.get("/users", async (req, res) => {
+router.get("/users", authMiddleware_1.verifyToken, async (req, res) => {
     try {
         // Obter o repositório da entidade User
         const userRepository = data_source_1.AppDataSource.getRepository(Users_1.User);
@@ -78,7 +79,7 @@ router.get("/users", async (req, res) => {
 });
 // Rota para visualizar um usuário específico
 // Endereço para acessar a api através da aplicação externa com o verbo GET: http://localhost:8080/users/:id
-router.get("/users/:id", async (req, res) => {
+router.get("/users/:id", authMiddleware_1.verifyToken, async (req, res) => {
     try {
         // Obter o ID do usuário a partir dos parâmetros da requisição
         const { id } = req.params;
@@ -116,7 +117,7 @@ router.get("/users/:id", async (req, res) => {
     "situation" : 1
 }
 */
-router.post("/users", async (req, res) => {
+router.post("/users", authMiddleware_1.verifyToken, async (req, res) => {
     try {
         // Receber os dados enviados no corpo da requisição
         var data = req.body;
@@ -175,7 +176,7 @@ router.post("/users", async (req, res) => {
   "password":"123456"
 }
 */
-router.put("/users-password/:id", async (req, res) => {
+router.put("/users-password/:id", authMiddleware_1.verifyToken, async (req, res) => {
     try {
         // Obter o ID da situação a partir dos parâmetros da requisição
         const { id } = req.params;
@@ -235,7 +236,7 @@ router.put("/users-password/:id", async (req, res) => {
     "situation":1
 }
 */
-router.put("/users/:id", async (req, res) => {
+router.put("/users/:id", authMiddleware_1.verifyToken, async (req, res) => {
     try {
         // Obter o ID da situação a partir dos parâmetros da requisição
         const { id } = req.params;
@@ -299,7 +300,7 @@ router.put("/users/:id", async (req, res) => {
 });
 // Criar a rota para apagar um usuário
 // Endereço para acessar a API através da aplicação externa com o verbo DELETE: http://localhost:8080/users/:id
-router.delete("/users/:id", async (req, res) => {
+router.delete("/users/:id", authMiddleware_1.verifyToken, async (req, res) => {
     try {
         // Obter o ID do usuário a partir dos parâmetros da requisição
         const { id } = req.params;
