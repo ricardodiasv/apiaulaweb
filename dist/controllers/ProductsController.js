@@ -52,7 +52,7 @@ router.get("/products", async (req, res) => {
         const page = Number(req.query.page) || 1;
         const limite = Number(req.query.limite) || 10;
         console.log(`page=${page}, limite=${limite}`);
-        const result = await PaginationService_1.PaginationService.paginate(productRepository, page, limite, { id: "DESC" }, ["productSituation"]);
+        const result = await PaginationService_1.PaginationService.paginate(productRepository, page, limite, { id: "DESC" }, ["productSituation", "productCategoria"]);
         console.log("Paginate retornou", result);
         res.status(200).json(result);
         return;
@@ -70,7 +70,7 @@ router.get("/products/:id", async (req, res) => {
         const { id } = req.params;
         const productRepository = data_source_1.AppDataSource.getRepository(Products_1.Product);
         const product = await productRepository.findOne({
-            relations: ["productSituation"],
+            relations: ["productSituation", "productCategoria"],
             where: { id: parseInt(id) }
         });
         if (!product) {
@@ -89,13 +89,22 @@ router.get("/products/:id", async (req, res) => {
         return;
     }
 });
+/*
+{
+    "name":"Curso de Node.js",
+    "description" : "No Curso de Node.js é abordado o desenvolvimento...",
+    "price" : 497,
+    "situation":1,
+    "category": 1
+}
+*/
 router.post("/products", async (req, res) => {
     try {
         // Receber os dados enviados no corpo da requisição
         var data = req.body;
         // Validar os dados utilizando o yup
         const schema = yup.object().shape({
-            name: yup
+            nameProduct: yup
                 .string()
                 .required("O campo nome é obrigatório!")
                 .min(3, "O campo nome deve ter no mínimo 3 caracteres!")
@@ -107,21 +116,21 @@ router.post("/products", async (req, res) => {
                 .max(255, "O campo slug deve ter no máximo 255 caracteres!"),
             description: yup
                 .string()
-                .required("O campo slug é obrigatório!")
-                .min(10, "O campo slug deve ter no mínimo 10 caracteres!"),
+                .required("O campo description é obrigatório!")
+                .min(10, "O campo description deve ter no mínimo 10 caracteres!"),
             price: yup
                 .number()
                 .typeError("O preço deve ser um número!")
                 .required("O campo preço é obrigatório!")
                 .positive("O preço deve ser um valor positivo")
                 .test("is-decimal", "O preço deve ter no máximo duas casas decimais!", (value) => /^\d+(\.\d{1,2})?$/.test(value?.toString() || "")),
-            situation: yup
+            productSituation: yup
                 .number()
                 .typeError("A situação deve ser um número!")
                 .required("O campo situação é obrigatório!")
                 .integer("O campo situação deve ser um número inteiro!")
                 .positive("O campo situação deve ser um valor positivo!"),
-            category: yup
+            productCategoria: yup
                 .number()
                 .typeError("A categoria deve ser um número!")
                 .required("O campo categoria é obrigatório!")
@@ -190,7 +199,7 @@ router.put("/products/:id", async (req, res) => {
         const data = req.body;
         //Validar os dados utilizando o yup
         const schema = yup.object().shape({
-            name: yup
+            nameProduct: yup
                 .string()
                 .required("O campo nome é obrigatório!")
                 .min(3, "O campo nome deve ter no mínimo 3 caracteres!")
@@ -210,13 +219,13 @@ router.put("/products/:id", async (req, res) => {
                 .required("O campo preço é obrigatório!")
                 .positive("O preço deve ser um valor positivo")
                 .test("is-decimal", "O preço deve ter no máximo duas casas decimais!", (value) => /^\d+(\.\d{1,2})?$/.test(value?.toString() || "")),
-            situation: yup
+            productSituation: yup
                 .number()
                 .typeError("A situação deve ser um número!")
                 .required("O campo situação é obrigatório!")
                 .integer("O campo situação deve ser um número inteiro!")
                 .positive("O campo situação deve ser um valor positivo!"),
-            category: yup
+            productCategoria: yup
                 .number()
                 .typeError("A categoria deve ser um número!")
                 .required("O campo categoria é obrigatório!")

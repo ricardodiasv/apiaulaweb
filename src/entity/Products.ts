@@ -9,8 +9,15 @@ export class Product{
   @PrimaryGeneratedColumn()
   id!: number
 
-  @Column({unique: true})
+  @Column({})
   nameProduct!: string;
+
+  @Column({})
+  description! : string;
+
+  
+  @Column({ type: "float" })
+  price!: number;
 
   
   @Column({ unique: true })

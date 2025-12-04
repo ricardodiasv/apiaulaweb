@@ -17,6 +17,8 @@ const ProductSituation_1 = require("./ProductSituation");
 let Product = class Product {
     id;
     nameProduct;
+    description;
+    price;
     slug;
     productCategoria;
     productSituation;
@@ -29,9 +31,17 @@ __decorate([
     __metadata("design:type", Number)
 ], Product.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ unique: true }),
+    (0, typeorm_1.Column)({}),
     __metadata("design:type", String)
 ], Product.prototype, "nameProduct", void 0);
+__decorate([
+    (0, typeorm_1.Column)({}),
+    __metadata("design:type", String)
+], Product.prototype, "description", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "float" }),
+    __metadata("design:type", Number)
+], Product.prototype, "price", void 0);
 __decorate([
     (0, typeorm_1.Column)({ unique: true }),
     __metadata("design:type", String)

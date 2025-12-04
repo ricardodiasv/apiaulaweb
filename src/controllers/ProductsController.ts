@@ -21,7 +21,7 @@ router.get("/products", async (req:Request, res:Response) =>{
 
         console.log(`page=${page}, limite=${limite}`);
 
-        const result = await PaginationService.paginate(productRepository, page, limite, {id: "DESC"}, ["productSituation"]);
+        const result = await PaginationService.paginate(productRepository, page, limite, {id: "DESC"}, ["productSituation", "productCategoria"]);
         console.log("Paginate retornou", result);
 
         res.status(200).json(result);
@@ -44,7 +44,7 @@ router.get("/products/:id", async (req:Request, res:Response) =>{
         const productRepository = AppDataSource.getRepository(Product);
 
         const product = await productRepository.findOne({
-          relations: ["productSituation"],
+          relations: ["productSituation", "productCategoria"],
           where: { id: parseInt(id!) }
         });
 
@@ -66,7 +66,15 @@ router.get("/products/:id", async (req:Request, res:Response) =>{
     }
 })
 
-
+/*
+{
+    "name":"Curso de Node.js",
+    "description" : "No Curso de Node.js é abordado o desenvolvimento...",
+    "price" : 497,
+    "situation":1,
+    "category": 1
+}
+*/
 
 router.post("/products", async (req: Request, res: Response) => {
   try {
@@ -75,7 +83,7 @@ router.post("/products", async (req: Request, res: Response) => {
 
     // Validar os dados utilizando o yup
     const schema = yup.object().shape({
-        name: yup
+      nameProduct: yup
           .string()
           .required("O campo nome é obrigatório!")
           .min(3, "O campo nome deve ter no mínimo 3 caracteres!")
@@ -89,8 +97,8 @@ router.post("/products", async (req: Request, res: Response) => {
 
         description: yup
           .string()
-          .required("O campo slug é obrigatório!")
-          .min(10, "O campo slug deve ter no mínimo 10 caracteres!"),
+          .required("O campo description é obrigatório!")
+          .min(10, "O campo description deve ter no mínimo 10 caracteres!"),
 
         price: yup
           .number()
@@ -103,14 +111,14 @@ router.post("/products", async (req: Request, res: Response) => {
               (value) => /^\d+(\.\d{1,2})?$/.test(value?.toString() || "")
           ),
 
-          situation: yup
+          productSituation: yup
             .number()
             .typeError("A situação deve ser um número!")
             .required("O campo situação é obrigatório!")
             .integer("O campo situação deve ser um número inteiro!")
             .positive("O campo situação deve ser um valor positivo!"),
 
-            category: yup
+            productCategoria: yup
               .number()
               .typeError("A categoria deve ser um número!")
               .required("O campo categoria é obrigatório!")
@@ -191,7 +199,7 @@ router.put("/products/:id", async (req:Request, res:Response) =>{
 
       //Validar os dados utilizando o yup
       const schema = yup.object().shape({
-        name: yup
+        nameProduct: yup
         .string()
         .required("O campo nome é obrigatório!")
         .min(3, "O campo nome deve ter no mínimo 3 caracteres!")
@@ -219,19 +227,19 @@ router.put("/products/:id", async (req:Request, res:Response) =>{
             (value) => /^\d+(\.\d{1,2})?$/.test(value?.toString() || "")
         ),
 
-        situation: yup
+        productSituation: yup
           .number()
           .typeError("A situação deve ser um número!")
           .required("O campo situação é obrigatório!")
           .integer("O campo situação deve ser um número inteiro!")
           .positive("O campo situação deve ser um valor positivo!"),
 
-          category: yup
-            .number()
-            .typeError("A categoria deve ser um número!")
-            .required("O campo categoria é obrigatório!")
-            .integer("O campo categoria deve ser um número inteiro!")
-            .positive("O campo categoria deve ser um valor positivo"),
+        productCategoria: yup
+          .number()
+          .typeError("A categoria deve ser um número!")
+          .required("O campo categoria é obrigatório!")
+          .integer("O campo categoria deve ser um número inteiro!")
+          .positive("O campo categoria deve ser um valor positivo"),
       });
 
       // Verificar se os dados passaram pela validação

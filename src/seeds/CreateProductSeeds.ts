@@ -37,12 +37,16 @@ export default class CreateProductsSeeds {
       productRepository.create({
         nameProduct: "Curso de Node.js",
         slug: "curso-de-nodejs",
+        description : "No Curso de Node.js é abordado o desenvolvimento...",
+        price : 500.50,
         productCategoria: category,
         productSituation: situation,
       }),
       productRepository.create({
         nameProduct: "Curso de Node.js e React",
         slug: "curso-de-nodejs-e-react",
+        description : "No Curso de Node.js e React é abordado o desenvolvimento...",
+        price : 497.80,
         productCategoria: category,
         productSituation: situation,
       }),
