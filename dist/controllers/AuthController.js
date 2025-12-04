@@ -47,6 +47,7 @@ const data_source_1 = require("../data-source");
 const Users_1 = require("../entity/Users");
 const crypto_1 = __importDefault(require("crypto"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
+const authMiddleware_1 = require("../middlewares/authMiddleware");
 // Criar a Aplicação Express
 const router = express_1.default.Router();
 // Criar a rota para realizar o login
@@ -84,6 +85,74 @@ router.post("/", async (req, res) => {
             message: error.message || "Erro ao realizar o login!",
         });
         return;
+    }
+});
+/*
+Rota GET: http://localhost:8080/validate-token
+*/
+router.get("/validate-token", authMiddleware_1.verifyToken, async (req, res) => {
+    res.status(200).json({
+        message: "Token válido!",
+        userId: req.user.id,
+    });
+});
+/*
+{
+    "name" : "Ricardo",
+    "email" : "gabriel@ricardo.com.br",
+    "password" : "123456",
+    "situation" : 1
+}
+
+*/
+router.post("/new-users", async (req, res) => {
+    try {
+        // Receber os dados enviados no corpo da requisição
+        var data = req.body;
+        // Validar os dados utilizando o yup
+        const schema = yup.object().shape({
+            name: yup.string().required("O campo nome é obrigatório!").min(3, "O campo nome deve ter no mínimo 3 caracteres"),
+            email: yup.string().email("E-mail inválido").required("O campo e-mail é obrigatório"),
+            password: yup.string().required("O campo senha é obrigatório!").min(6, "O campo senha deve ter no mínimo 6 caracteres"),
+            situation: yup.number().required("O campo situação é obrigatório"),
+        });
+        // Verificar se os dados passaram pela validação
+        await schema.validate(data, { abortEarly: false });
+        // Criar uma instância do repositório de User
+        const userRepository = data_source_1.AppDataSource.getRepository(Users_1.User);
+        // Recuperar o registro do banco de dados com o valor da coluna email
+        const existingUser = await userRepository.findOne({
+            where: { email: data.email }
+        });
+        // Verificar se já existe um usuário com o mesmo e-mail
+        if (existingUser) {
+            res.status(400).json({
+                message: "Já existe um usuário cadastro com esse e-mail",
+            });
+            return;
+        }
+        // Criptografar a senha antes de salvar
+        //data.password = await bcrypt.hash(data.password, 10)
+        // Criar um novo registro
+        const newUser = userRepository.create(data);
+        // Salvar o registro no banco de dados
+        await userRepository.save(newUser);
+        // Retornar resposta de sucesso
+        res.status(201).json({
+            message: "Usuário cadastro com sucesso!",
+            situation: newUser,
+        });
+    }
+    catch (error) {
+        if (error instanceof yup.ValidationError) {
+            return res.status(400).json({
+                message: "Falha na validação dos dados",
+                errors: error.errors,
+                fields: error.inner.map(e => ({ path: e.path, message: e.message }))
+            });
+        }
+        console.error(error);
+        return res.status(500).json({ message: "Erro interno ao cadastrar o usuário" });
     }
 });
 /*

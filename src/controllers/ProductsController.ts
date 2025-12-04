@@ -21,7 +21,7 @@ router.get("/products", async (req:Request, res:Response) =>{
 
         console.log(`page=${page}, limite=${limite}`);
 
-        const result = await PaginationService.paginate(productRepository, page, limite, {id: "DESC"});
+        const result = await PaginationService.paginate(productRepository, page, limite, {id: "DESC"}, ["productSituation"]);
         console.log("Paginate retornou", result);
 
         res.status(200).json(result);
@@ -43,7 +43,10 @@ router.get("/products/:id", async (req:Request, res:Response) =>{
 
         const productRepository = AppDataSource.getRepository(Product);
 
-        const product = await productRepository.findOneBy({id : parseInt(id!)});
+        const product = await productRepository.findOne({
+          relations: ["productSituation"],
+          where: { id: parseInt(id!) }
+        });
 
         if(!product){
             res.status(404).json({

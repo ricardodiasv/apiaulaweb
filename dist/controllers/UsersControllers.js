@@ -62,7 +62,7 @@ router.get("/users", authMiddleware_1.verifyToken, async (req, res) => {
         // Definir o limite de registros por página
         const limit = Number(req.query.limit) || 10;
         // Usar o serviço de paginação
-        const result = await PaginationService_1.PaginationService.paginate(userRepository, page, limit, { id: "DESC" });
+        const result = await PaginationService_1.PaginationService.paginate(userRepository, page, limit, { id: "DESC" }, ["situation"]);
         // Retornar a resposta com os dados e informações da paginação
         res.status(200).json(result);
         return;
@@ -84,7 +84,10 @@ router.get("/users/:id", authMiddleware_1.verifyToken, async (req, res) => {
         // Obter o repositório da entidade User
         const userRepository = data_source_1.AppDataSource.getRepository(Users_1.User);
         // Buscar o usuário no banco de dados pelo ID
-        const user = await userRepository.findOneBy({ id: parseInt(id) });
+        const user = await userRepository.findOne({
+            relations: ["situation"],
+            where: { id: parseInt(id) }
+        });
         //Verificar se o usuário foi encontrado
         if (!user) {
             res.status(404).json({

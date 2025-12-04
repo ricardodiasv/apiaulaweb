@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaginationService = void 0;
 class PaginationService {
-    static async paginate(repository, page = 1, limit = 10, order = {}) {
+    static async paginate(repository, page = 1, limit = 10, order = {}, relations) {
         const totalRecords = await repository.count();
         const lastPage = Math.ceil(totalRecords / limit);
         if (page > lastPage && lastPage > 0) {
@@ -13,6 +13,7 @@ class PaginationService {
             take: limit,
             skip: offset,
             order,
+            relations,
         });
         return {
             error: false,

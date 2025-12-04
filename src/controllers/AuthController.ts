@@ -11,6 +11,7 @@ import { User } from "../entity/Users";
 import crypto from "crypto";
 
 import nodemailer from "nodemailer";
+import { verifyToken } from "../middlewares/authMiddleware";
 
 
 // Criar a Aplicação Express
@@ -61,9 +62,93 @@ router.post("/", async (req:Request, res:Response)=>{
 
     }
 
+});
+
+/*
+Rota GET: http://localhost:8080/validate-token
+*/
+
+router.get("/validate-token", verifyToken, async (req:Request, res:Response)=>{
+  res.status(200).json({
+    message: "Token válido!",
+    userId: (req as any).user.id,
+  });
 
 
 });
+
+/*
+{
+    "name" : "Ricardo",
+    "email" : "gabriel@ricardo.com.br",
+    "password" : "123456",
+    "situation" : 1
+}
+
+*/
+
+router.post("/new-users", async (req: Request, res: Response) => {
+  
+  try{
+    // Receber os dados enviados no corpo da requisição
+    var data = req.body;
+
+    // Validar os dados utilizando o yup
+    const schema = yup.object().shape({
+      name: yup.string().required("O campo nome é obrigatório!").min(3, "O campo nome deve ter no mínimo 3 caracteres"),
+      email: yup.string().email("E-mail inválido").required("O campo e-mail é obrigatório"),
+      password: yup.string().required("O campo senha é obrigatório!").min(6, "O campo senha deve ter no mínimo 6 caracteres"),
+      situation: yup.number().required("O campo situação é obrigatório"),
+    });
+
+    // Verificar se os dados passaram pela validação
+    await schema.validate(data, { abortEarly: false });
+
+    // Criar uma instância do repositório de User
+    const userRepository = AppDataSource.getRepository(User);
+
+    // Recuperar o registro do banco de dados com o valor da coluna email
+    const existingUser = await userRepository.findOne({
+      where: { email: data.email }
+    });
+
+    // Verificar se já existe um usuário com o mesmo e-mail
+    if(existingUser){
+      res.status(400).json({
+        message: "Já existe um usuário cadastro com esse e-mail",
+      });
+      return;
+    }
+    // Criptografar a senha antes de salvar
+    //data.password = await bcrypt.hash(data.password, 10)
+
+    // Criar um novo registro
+    const newUser = userRepository.create(data);
+
+    // Salvar o registro no banco de dados
+    await userRepository.save(newUser);
+
+    // Retornar resposta de sucesso
+    res.status(201).json({
+      message: "Usuário cadastro com sucesso!",
+      situation: newUser,
+    });
+  }
+  catch (error) {
+      if (error instanceof yup.ValidationError) {
+        return res.status(400).json({
+          message: "Falha na validação dos dados",
+          errors: error.errors, 
+          fields: error.inner.map(e => ({ path: e.path, message: e.message }))
+        });
+      }
+  
+      console.error(error);
+      return res.status(500).json({ message: "Erro interno ao cadastrar o usuário" });
+    }
+  
+});
+
 
 /*
 {

@@ -52,7 +52,7 @@ router.get("/products", async (req, res) => {
         const page = Number(req.query.page) || 1;
         const limite = Number(req.query.limite) || 10;
         console.log(`page=${page}, limite=${limite}`);
-        const result = await PaginationService_1.PaginationService.paginate(productRepository, page, limite, { id: "DESC" });
+        const result = await PaginationService_1.PaginationService.paginate(productRepository, page, limite, { id: "DESC" }, ["productSituation"]);
         console.log("Paginate retornou", result);
         res.status(200).json(result);
         return;
@@ -69,7 +69,10 @@ router.get("/products/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const productRepository = data_source_1.AppDataSource.getRepository(Products_1.Product);
-        const product = await productRepository.findOneBy({ id: parseInt(id) });
+        const product = await productRepository.findOne({
+            relations: ["productSituation"],
+            where: { id: parseInt(id) }
+        });
         if (!product) {
             res.status(404).json({
                 mensagem: "Produto não encontrado!"

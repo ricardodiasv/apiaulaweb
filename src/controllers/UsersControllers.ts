@@ -33,7 +33,7 @@ router.get("/users",verifyToken, async (req: Request, res: Response) => {
     const limit = Number(req.query.limit) || 10;
 
     // Usar o serviço de paginação
-    const result = await PaginationService.paginate(userRepository, page, limit, { id: "DESC" });
+    const result = await PaginationService.paginate(userRepository, page, limit, { id: "DESC" } , ["situation"]);
 
     // Retornar a resposta com os dados e informações da paginação
     res.status(200).json(result);
@@ -58,7 +58,10 @@ router.get("/users/:id", verifyToken,async (req: Request, res: Response) => {
     const userRepository = AppDataSource.getRepository(User)
 
     // Buscar o usuário no banco de dados pelo ID
-    const user = await userRepository.findOneBy({ id: parseInt(id!) });
+    const user = await userRepository.findOne({ 
+      relations:["situation"],
+      where: {id: parseInt(id!)} 
+    });
 
     //Verificar se o usuário foi encontrado
     if(!user){
